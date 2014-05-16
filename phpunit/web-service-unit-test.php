@@ -1,7 +1,7 @@
 <?php
 //
 //  test on Ubuntu 14.04
-//  $ apt-get install phpunit libxml2-utils wget
+//  $ apt-get install phpunit libxml2-utils tidy wget
 //
 //  $ phpunit web-service-unit-test.php
 //
@@ -19,6 +19,10 @@ class WebServiceUnitTest extends PHPUnit_Framework_TestCase
 		// testing usage
 		$this->target_web_service = 'https://github.com/';
 		$this->target_api_service = 'https://api.github.com/';
+
+		// html validator
+		$this->html_check_cmd = 'xmllint --html --noout --valid ';
+		$this->html_check_cmd = 'tidy --show-warnings false -quiet -errors 2>&1 ';
 
 		$this->case_enable = array(
 			'testWeb' => true,
@@ -39,7 +43,7 @@ class WebServiceUnitTest extends PHPUnit_Framework_TestCase
 		// check html format
 		$temp_file = tempnam(sys_get_temp_dir(), 'html_');
 		$this->assertTrue(file_put_contents($temp_file, $webpage_content) !== false);
-		$this->assertTrue(empty(shell_exec('xmllint --html --noout --valid "'.$temp_file.'"')));
+		$this->assertTrue(empty(shell_exec($this->html_check_cmd.' "'.$temp_file.'"')));
 		$this->assertTrue(unlink($temp_file));
 
 		// check links
